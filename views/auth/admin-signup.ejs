@@ -1,0 +1,128 @@
+<!-- <!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title><%= title %></title>
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.2.3/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="/css/style.css" />
+  </head>
+  <body
+    class="admin-signup-container d-flex align-items-center justify-content-center"
+  >
+    <div class="container">
+      <div class="row justify-content-center">
+        <div class="col-lg-6 col-md-8">
+          <div class="card admin-card">
+            <div class="card-header admin-card-header text-center text-white">
+              <i class="fas fa-user-shield fa-3x mb-2"></i>
+              <h4><%= title %></h4>
+              <p class="mb-0">Create a new administrator account</p>
+            </div>
+            <div class="card-body p-4 p-md-5">
+              <% if (error) { %>
+              <div class="alert alert-danger admin-alert"><%= error %></div>
+              <% } %> <% if (success) { %>
+              <div class="alert alert-success"><%= success %></div>
+              <% } %>
+
+              <form action="/admin/signup" method="POST">
+                <div class="mb-3 admin-form-group">
+                  <label for="username" class="form-label">Username</label>
+                  <input
+                    type="text"
+                    class="form-control"
+                    id="username"
+                    name="username"
+                    value="<%= formData.username || '' %>"
+                    required
+                  />
+                </div>
+                <div class="mb-3 admin-form-group">
+                  <label for="email" class="form-label">Email Address</label>
+                  <input
+                    type="email"
+                    class="form-control"
+                    id="email"
+                    name="email"
+                    value="<%= formData.email || '' %>"
+                    required
+                  />
+                </div>
+                <div class="mb-3 admin-form-group">
+                  <label for="password" class="form-label">Password</label>
+                  <input
+                    type="password"
+                    class="form-control"
+                    id="password"
+                    name="password"
+                    required
+                  />
+                </div>
+                <div class="mb-4 admin-form-group">
+                  <label for="confirmPassword" class="form-label"
+                    >Confirm Password</label
+                  >
+                  <input
+                    type="password"
+                    class="form-control"
+                    id="confirmPassword"
+                    name="confirmPassword"
+                    required
+                  />
+                </div>
+
+                <div class="admin-security-info mb-4">
+                  <i class="fas fa-key me-2"></i>
+                  <strong>Admin Security Key</strong>
+                  <p class="small mb-0 mt-1">
+                    Your unique admin security key has been automatically
+                    generated.
+                  </p>
+                </div>
+
+                <div class="mb-4 admin-form-group">
+                  <input
+                    type="hidden"
+                    class="form-control"
+                    id="adminKey"
+                    name="adminKey"
+                    value="<%= adminKey %>"
+                  />
+                  <div class="form-control-plaintext fw-bold text-success">
+                    <%= adminKey %>
+                  </div>
+                </div>
+
+                <div class="d-grid">
+                  <button type="submit" class="btn admin-btn-register">
+                    <i class="fas fa-user-plus me-2"></i>Register Admin
+                  </button>
+                </div>
+              </form>
+
+              <div class="admin-divider"></div>
+              <div class="text-center">
+                <p>Already have an account?</p>
+                <a
+                  href="/login"
+                  class="btn btn-outline-secondary admin-btn-secondary"
+                  >Login Here</a
+                >
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.2.3/js/bootstrap.bundle.min.js"></script>
+  </body>
+</html> -->

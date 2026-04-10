@@ -1,0 +1,78 @@
+<nav class="navbar navbar-expand-lg navbar-dark sticky-top">
+  <div class="container-fluid">
+    <a class="navbar-brand fw-bold" href="/"><i class="fas fa-coffee"></i> CAFE</a>
+    <button
+      class="navbar-toggler"
+      type="button"
+      data-bs-toggle="collapse"
+      data-bs-target="#navbarNav"
+      aria-controls="navbarNav"
+      aria-expanded="false"
+      aria-label="Toggle navigation"
+    >
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarNav">
+      <ul class="navbar-nav ms-auto align-items-lg-center">
+        <li class="nav-item">
+          <a class="nav-link <%= currentPath === '/' ? 'active' : '' %>" href="/">Home</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link <%= currentPath === '/menu' ? 'active' : '' %>" href="/menu">Menu</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link <%= currentPath === '/about' ? 'active' : '' %>" href="/about">About</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link <%= currentPath === '/contact' ? 'active' : '' %>" href="/contact">Contact</a>
+        </li>
+
+        <% if (user && user.role === "admin") { %>
+        <li class="nav-item">
+          <a class="nav-link <%= currentPath.startsWith('/admin') ? 'active' : '' %>" href="/admin/dashboard">
+            <i class="fas fa-cog me-1"></i>Admin Panel
+          </a>
+        </li>
+        <% } %>
+
+        <% if (user && user.role !== "admin") { %>
+        <li class="nav-item">
+          <a class="nav-link <%= currentPath === '/orders' ? 'active' : '' %>" href="/orders">My Orders</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link <%= currentPath === '/cart' ? 'active' : '' %>" href="/cart">
+            Cart
+            <% if (cartCount > 0) { %>
+            <span class="badge bg-danger ms-1"><%= cartCount %></span>
+            <% } %>
+          </a>
+        </li>
+        <% } %>
+
+        <% if (user) { %>
+        <li class="nav-item dropdown">
+          <a
+            class="nav-link dropdown-toggle"
+            href="#"
+            id="userDropdown"
+            role="button"
+            data-bs-toggle="dropdown"
+            aria-expanded="false"
+          >
+            <i class="fas fa-user-circle me-1"></i><%= user.username %>
+          </a>
+          <ul class="dropdown-menu dropdown-menu-end">
+            <li><a class="dropdown-item" href="/profile">Profile</a></li>
+            <li><hr class="dropdown-divider" /></li>
+            <li><a class="dropdown-item" href="/logout">Logout</a></li>
+          </ul>
+        </li>
+        <% } else { %>
+        <li class="nav-item">
+          <a class="btn btn-accent btn-sm text-white ms-lg-2 mt-2 mt-lg-0" href="/login">Login</a>
+        </li>
+        <% } %>
+      </ul>
+    </div>
+  </div>
+</nav>

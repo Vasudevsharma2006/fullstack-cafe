@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+    <%- include("../partials/head", { title }) %>
+  <body>
+        <%- include("../partials/nav-admin") %>
+
+    <div class="container-fluid py-4">
+      <div class="row mb-4">
+        <div class="col-md-8">
+          <h2><i class="fas fa-list"></i> Manage Menu Items</h2>
+          <p class="text-muted">Add, edit, or delete menu items</p>
+        </div>
+        <div class="col-md-4 text-end">
+          <button
+            type="button"
+            class="btn btn-primary"
+            data-bs-toggle="modal"
+            data-bs-target="#addItemModal"
+          >
+            <i class="fas fa-plus"></i> Add New Item
+          </button>
+        </div>
+      </div>
+      <% if (success) { %>
+      <div class="alert alert-success"><%= success %></div>
+      <% } %>
+      <% if (error) { %>
+      <div class="alert alert-danger"><%= error %></div>
+      <% } %>
+
+      <div class="table-responsive">
+        <table class="table table-hover table-striped">
+          <thead class="table-dark">
+            <tr>
+              <th>Image</th>
+              <th>Name</th>
+              <th>Category</th>
+              <th>Price</th>
+              <th>Description</th>
+              <th>Status</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% menuItems.forEach(item => { %>
+            <tr>
+              <td>
+                <img
+                  src="<%= item.image || 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=400&h=400&fit=crop' %>"
+                  alt="<%= item.name %>"
+                  style="
+                    width: 50px;
+                    height: 50px;
+                    object-fit: cover;
+                    border-radius: 8px;
+                  "
+                  onerror="
+                    this.src = 'https://via.placeholder.com/50?text=No+Image'
+                  "
+                />
+              </td>
+              <td><strong><%= item.name %></strong></td>
+              <td>
+                <span class="badge bg-secondary"><%= item.category %></span>
+              </td>
+              <td>&#8377; <%= item.price.toFixed(2) %></td>
+              <td><small><%= item.description %></small></td>
+              <td>
+                <% if (item.available) { %>
+                <span class="badge bg-success">Available</span>
+                <% } else { %>
+                <span class="badge bg-danger">Out of Stock</span>
+                <% } %>
+              </td>
+              <td>
+                <a
+                  href="/admin/menu/edit/<%= item.id %>"
+                  class="btn btn-sm btn-warning"
+                >
+                  <i class="fas fa-edit"></i> Edit
+                </a>
+                <a
+                  href="/admin/menu/delete/<%= item.id %>"
+                  class="btn btn-sm btn-danger"
+                  onclick="return confirm('Are you sure?');"
+                >
+                  <i class="fas fa-trash"></i> Delete
+                </a>
+              </td>
+            </tr>
+            <% }); %>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Add Item Modal -->
+    <div class="modal fade" id="addItemModal" tabindex="-1">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">Add New Menu Item</h5>
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="modal"
+            ></button>
+          </div>
+          <div class="modal-body">
+            <form method="POST" action="/admin/menu/add" enctype="multipart/form-data">
+              <div class="mb-3">
+                <label for="name" class="form-label">Item Name</label>
+                <input
+                  type="text"
+                  class="form-control"
+                  id="name"
+                  name="name"
+                  required
+                />
+              </div>
+              <div class="mb-3">
+                <label for="price" class="form-label">Price</label>
+                <input
+                  type="number"
+                  class="form-control"
+                  id="price"
+                  name="price"
+                  step="0.01"
+                  required
+                />
+              </div>
+              <div class="mb-3">
+                <label for="category" class="form-label">Category</label>
+                <select
+                  class="form-control"
+                  id="category"
+                  name="category"
+                  required
+                >
+                  <option value="">Select Category</option>
+                  <option value="Coffee">Coffee</option>
+                  <option value="Pastry">Pastry</option>
+                  <option value="Food">Food</option>
+                  <option value="Cold Drinks">Cold Drinks</option>
+                </select>
+              </div>
+              <div class="mb-3">
+                <label for="description" class="form-label">Description</label>
+                <textarea
+                  class="form-control"
+                  id="description"
+                  name="description"
+                  rows="3"
+                ></textarea>
+              </div>
+              <div class="mb-3">
+                <label for="image" class="form-label">Image (optional)</label>
+                <input
+                  type="file"
+                  class="form-control"
+                  id="image"
+                  name="image"
+                  accept="image/*"
+                />
+              </div>
+              <button type="submit" class="btn btn-primary w-100">
+                Add Item
+              </button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <footer class="bg-dark text-light py-4 mt-5">
+      <div class="container">
+        <p class="text-center mb-0">
+          &copy; 2026 CAFE Admin Panel - All Rights Reserved
+        </p>
+      </div>
+    </footer>
+
+        <%- include("../partials/scripts", { includeMainJs: false }) %>
+  </body>
+</html>
+
+

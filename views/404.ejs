@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+  <%- include("partials/head", { title }) %>
+  <body>
+    <%- include("partials/nav-main") %>
+
+    <div class="container mt-5">
+      <div class="row justify-content-center">
+        <div class="col-md-6 text-center">
+          <h1 class="display-1">404</h1>
+          <h2>Page Not Found</h2>
+          <p class="lead text-muted mt-3">
+            Sorry, the page you're looking for doesn't exist.
+          </p>
+          <a href="/" class="btn btn-primary btn-lg mt-4">
+            <i class="fas fa-home"></i> Go Home
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <footer class="bg-dark text-light py-4 mt-5">
+      <div class="container">
+        <p class="text-center mb-0">&copy; 2026 CAFE - All Rights Reserved</p>
+      </div>
+    </footer>
+
+    <%- include("partials/scripts", { includeMainJs: false }) %>
+  </body>
+</html>
+

@@ -1,0 +1,128 @@
+﻿<!-- Hero Section -->
+<div class="hero-section">
+  <video autoplay loop muted playsinline class="hero-bg-video">
+    <source src="https://cdn.pixabay.com/video/2020/05/29/38552-429035255.mp4" type="video/mp4">
+    Your browser does not support the video tag.
+  </video>
+  <div class="container text-white">
+    <h1 class="hero-title">Discover Your Perfect Coffee Moment</h1>
+    <p class="hero-subtitle">
+      Experience the rich aroma and exquisite taste of our handcrafted beverages.
+    </p>
+    <a href="/menu" class="btn btn-accent btn-lg animate-fade-in-up stagger-3"
+      >Explore Our Menu <i class="fas fa-arrow-right ms-2"></i
+    ></a>
+  </div>
+</div>
+
+<!-- Featured Items Section -->
+<% if (featuredItems && featuredItems.length > 0) { %>
+<section class="container my-5 py-5">
+  <div class="text-center mb-5">
+    <h2 class="text-gradient">Featured Favorites</h2>
+    <p class="lead text-muted">Handpicked by our baristas, loved by our customers.</p>
+  </div>
+  <div class="row">
+    <% featuredItems.forEach(function(item, index) { %>
+    <div class="col-lg-3 col-md-6 mb-4 d-flex align-items-stretch animate-fade-in-up stagger-<%= index + 1 %>">
+      <div class="food-card">
+        <div class="food-card-image">
+          <img
+            src="<%= item.image %>"
+            alt="<%= item.name %>"
+          />
+           <span class="food-card-badge <%= item.isAvailable ? 'available' : 'unavailable' %>">
+            <%= item.isAvailable ? 'Available' : 'Unavailable' %>
+          </span>
+        </div>
+        <div class="food-card-body">
+          <div class="d-flex justify-content-between align-items-center mb-2">
+            <h5 class="food-card-title"><%= item.name %></h5>
+             <span class="food-card-category"><%= item.category %></span>
+          </div>
+          <p class="food-card-description">
+            <%= item.description %>
+          </p>
+          <div class="food-card-footer">
+            <span class="food-card-price">&#8377;<%= item.price.toFixed(2) %></span>
+            <div class="food-card-action">
+              <a href="/menu" class="btn btn-primary btn-sm">Order Now</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <% }); %>
+  </div>
+   <div class="text-center mt-4">
+    <a href="/menu" class="btn btn-outline-primary">View Full Menu</a>
+  </div>
+</section>
+<% } %>
+
+<!-- Features Section -->
+<section class="featured-section">
+    <div class="container">
+        <div class="text-center text-white mb-5">
+            <h2>Why Choose CAFE?</h2>
+            <p class="lead">We're more than just a cafe.</p>
+        </div>
+        <div class="row">
+            <div class="col-md-4 mb-4 animate-fade-in-left">
+                <div class="feature-card">
+                    <i class="fas fa-mug-hot feature-icon"></i>
+                    <h5 class="mt-3">Premium Quality</h5>
+                    <p>We source the finest beans from around the world to deliver an exceptional cup every time.</p>
+                </div>
+            </div>
+            <div class="col-md-4 mb-4 animate-scale-in">
+                <div class="feature-card">
+                    <i class="fas fa-wifi feature-icon"></i>
+                    <h5 class="mt-3">Cozy Ambiance</h5>
+                    <p>Enjoy our comfortable seating and free high-speed Wi-Fi. The perfect spot to work or relax.</p>
+                </div>
+            </div>
+            <div class="col-md-4 mb-4 animate-fade-in-right">
+                <div class="feature-card">
+                    <i class="fas fa-user-friends feature-icon"></i>
+                    <h5 class="mt-3">Community Focused</h5>
+                    <p>We're proud to be a gathering place for locals and visitors alike. Join our coffee family!</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- About Us Section -->
+<section class="container my-5 py-5">
+    <div class="row align-items-center">
+        <div class="col-md-6 animate-fade-in-left">
+            <img src="https://images.pexels.com/photos/3184423/pexels-photo-3184423.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1" alt="Our Team" class="img-fluid rounded-xl shadow-lg">
+        </div>
+        <div class="col-md-6 animate-fade-in-right">
+            <h2 class="text-gradient">Who We Are</h2>
+            <p class="text-muted">CAFE was born from a passion for creating the perfect coffee experience. We believe in quality ingredients, sustainable practices, and building a strong community, one cup at a time.</p>
+            <p class="text-muted">Our team of dedicated baristas and staff are here to make your visit memorable. Learn more about our story and our commitment to excellence.</p>
+            <a href="/about" class="btn btn-primary">More About Us</a>
+        </div>
+    </div>
+</section>
+
+<!-- Gallery Section -->
+<section class="container-fluid bg-light py-5">
+    <div class="container">
+        <div class="text-center mb-5">
+            <h2 class="text-gradient">A Glimpse of Our World</h2>
+             <p class="lead text-muted">Immerse yourself in the CAFE atmosphere.</p>
+        </div>
+        <div class="gallery-grid">
+            <div class="gallery-item animate-scale-in stagger-1"><img src="https://images.pexels.com/photos/1695052/pexels-photo-1695052.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1" alt="Coffee Art"></div>
+            <div class="gallery-item animate-scale-in stagger-2"><img src="https://images.pexels.com/photos/302899/pexels-photo-302899.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1" alt="Espresso Pour"></div>
+            <div class="gallery-item animate-scale-in stagger-3"><img src="https://images.pexels.com/photos/262047/pexels-photo-262047.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1" alt="Cafe Interior"></div>
+            <div class="gallery-item animate-scale-in stagger-4"><img src="https://images.pexels.com/photos/414630/pexels-photo-414630.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1" alt="Fresh Pastries"></div>
+             <div class="gallery-item animate-scale-in stagger-5"><img src="https://images.pexels.com/photos/1437318/pexels-photo-1437318.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1" alt="Barista at work"></div>
+        </div>
+    </div>
+</section>
+
+

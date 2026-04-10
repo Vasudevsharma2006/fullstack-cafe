@@ -1,0 +1,23 @@
+[
+  {
+    "id": 1,
+    "name": "John Doe",
+    "role": "Barista",
+    "email": "john@cafe.com",
+    "status": "Active"
+  },
+  {
+    "id": 2,
+    "name": "Jane Smith",
+    "role": "Manager",
+    "email": "jane@cafe.com",
+    "status": "Active"
+  },
+  {
+    "id": 3,
+    "name": "Mike Johnson",
+    "role": "Chef",
+    "email": "mike@cafe.com",
+    "status": "Active"
+  }
+]

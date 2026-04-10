@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+  <%- include("../partials/head", { title }) %>
+  <body>
+    <%- include("../partials/nav-main") %>
+
+    <!-- Hero Section -->
+    <section class="hero-section text-white text-center py-5">
+      <video
+        class="hero-bg-video"
+        autoplay
+        muted
+        loop
+        playsinline
+        preload="auto"
+      >
+        <source
+          src="https://cdn.pixabay.com/vimeo/287777448/coffee-14065.mp4?width=1280&height=720&auto=compress&cs=high"
+          type="video/mp4"
+        />
+        <!-- Fallback: gradient background -->
+      </video>
+
+      <div class="container">
+        <h1 class="display-3 fw-bold mb-4">Welcome to CAFE</h1>
+        <p class="lead mb-4">Premium Cafe Management System</p>
+        <p class="text-light mb-5">
+          Streamline your cafe operations with our modern management platform
+        </p>
+        <div class="d-flex justify-content-center gap-3 flex-wrap">
+          <a href="/menu" class="btn btn-accent btn-lg">
+            <i class="fas fa-list"></i> View Menu
+          </a>
+          <% if (!user) { %>
+          <a href="/login" class="btn btn-outline-light btn-lg">
+            <i class="fas fa-sign-in-alt"></i> Login
+          </a>
+          <% } %>
+        </div>
+      </div>
+    </section>
+
+    <!-- Featured Foods Section -->
+    <section class="py-5" style="background: var(--light-secondary)">
+      <div class="container">
+        <div class="text-center mb-5">
+          <h2
+            class="menu-section-title"
+            style="border: none; padding-bottom: 0; margin-bottom: 1rem"
+          >
+            Featured Favorites
+          </h2>
+          <p class="text-muted">Discover our most popular cafe items</p>
+        </div>
+        <div class="row">
+          <% featuredItems.forEach(function(item) { %>
+          <div class="col-md-6 col-lg-3 mb-4">
+            <div class="food-card">
+              <div class="food-card-image">
+                <img src="<%= item.image %>" alt="<%= item.name %>" />
+                <div class="food-card-badge available">Popular</div>
+              </div>
+              <div class="food-card-body">
+                <h5 class="food-card-title"><%= item.name %></h5>
+                <span class="food-card-category"><%= item.category %></span>
+                <p class="food-card-description"><%= item.description %></p>
+                <div class="food-card-footer">
+                  <div class="food-card-price">
+                    &#8377; <%= item.price.toFixed(2) %>
+                  </div>
+                </div>
+                <a href="/menu" class="btn btn-accent w-100 mt-2">
+                  <i class="fas fa-shopping-cart"></i> Order Now
+                </a>
+              </div>
+            </div>
+          </div>
+          <% }); %>
+        </div>
+      </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="py-5" style="background: var(--surface-contrast)">
+      <div class="container">
+        <h2 class="text-center mb-5">Why Choose CAFE?</h2>
+        <div class="row">
+          <div class="col-md-4 mb-4">
+            <div class="card h-100 border-0 shadow-sm">
+              <div class="card-body text-center">
+                <i class="fas fa-chart-line fa-3x text-primary mb-3"></i>
+                <h5 class="card-title">Analytics & Reports</h5>
+                <p class="card-text">
+                  Track your cafe's performance with detailed analytics and
+                  reports.
+                </p>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-4 mb-4">
+            <div class="card h-100 border-0 shadow-sm">
+              <div class="card-body text-center">
+                <i class="fas fa-shopping-cart fa-3x text-primary mb-3"></i>
+                <h5 class="card-title">Order Management</h5>
+                <p class="card-text">
+                  Effortlessly manage orders and track customer purchases.
+                </p>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-4 mb-4">
+            <div class="card h-100 border-0 shadow-sm">
+              <div class="card-body text-center">
+                <i class="fas fa-users fa-3x text-primary mb-3"></i>
+                <h5 class="card-title">Staff Management</h5>
+                <p class="card-text">
+                  Organize and manage your team with ease.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section
+      class="py-5"
+      style="
+        background: linear-gradient(
+          135deg,
+          var(--primary-dark) 0%,
+          var(--primary-color) 55%,
+          var(--accent-color) 100%
+        );
+        color: white;
+      "
+    >
+      <div class="container text-center">
+        <h2 class="mb-4">Ready to Manage Your Cafe?</h2>
+        <% if (!user) { %>
+        <a href="/login" class="btn btn-accent btn-lg">
+          <i class="fas fa-sign-in-alt"></i> Login Now
+        </a>
+        <% } else { %>
+        <a href="/menu" class="btn btn-accent btn-lg">
+          <i class="fas fa-list"></i> Go to Menu
+        </a>
+        <% } %>
+      </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-gradient-dark text-light py-3 mt-5">
+      <div class="container">
+        <p class="text-center mb-0">&copy; 2026 CAFE - All Rights Reserved</p>
+      </div>
+    </footer>
+
+    <%- include("../partials/scripts", { includeMainJs: false }) %>
+  </body>
+</html>
+
+
+
+

@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+    <%- include("../partials/head", { title }) %>
+  <body>
+        <%- include("../partials/nav-admin") %>
+
+    <div class="container-fluid py-4">
+      <div class="row mb-4">
+        <div
+          class="col-md-12 d-flex justify-content-between align-items-center"
+        >
+          <div>
+            <h2><i class="fas fa-ban text-danger"></i> Cancelled Orders</h2>
+            <p class="text-muted mb-0">History of cancelled customer orders</p>
+          </div>
+          <a href="/admin/orders" class="btn btn-outline-primary">
+            <i class="fas fa-arrow-left"></i> Back to Active Orders </a>
+        </div>
+      </div>
+
+      <div class="table-responsive">
+        <table class="table table-hover table-striped">
+          <thead class="table-dark">
+            <tr>
+              <th>Order ID</th>
+              <th>Customer</th>
+              <th>Item</th>
+              <th>Qty</th>
+              <th>Total</th>
+              <th>Cancelled By</th>
+              <th>Reason</th>
+              <th>Cancelled At</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% if (cancelledOrders.length === 0) { %>
+            <tr>
+              <td colspan="8" class="text-center text-muted py-4">
+                <i class="fas fa-check-circle text-success"></i><br />
+                No cancelled orders </td>
+            </tr>
+            <% } else { %> <% cancelledOrders.forEach(order => { %>
+            <tr>
+              <td><strong>#<%= order.id %></strong></td>
+              <td><%= order.customerName %></td>
+              <td><%= order.item %></td>
+              <td><%= order.quantity %></td>
+              <td>&#8377; <%= Number(order.total).toFixed(2) %></td>
+              <td><%= order.cancelledBy || '-' %></td>
+              <td><%= order.cancellationReason || '-' %></td>
+              <td><%= order.cancelledAt || '-' %></td>
+            </tr>
+            <% }); %> <% } %>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+        <%- include("../partials/scripts", { includeMainJs: false }) %>
+  </body>
+</html>
+
+
+

@@ -1,0 +1,30 @@
+[
+  {
+    "id": 1,
+    "username": "Vashu",
+    "password": "$2b$10$zwcu6WE3ePo4c6cgts/Hm.65i1LIGNZ2vpxRXyovM29loVq5zGQY2",
+    "role": "admin",
+    "email": "admin@cafe.com"
+  },
+  {
+    "id": 2,
+    "username": "Vashu12",
+    "email": "vs37909@gmail.com",
+    "password": "$2b$10$uaAhzJ/k0NZ2XVnzElf/7uzJoU0wznuRh3e2UoEwPEUhFmTHitE.a",
+    "role": "user"
+  },
+  {
+    "id": 3,
+    "username": "user_1774689569106",
+    "email": "user_1774689569106@example.com",
+    "password": "$2b$10$Z.ujFkeTRGjo8YAR6q4aFOstfb9lrU.BWnwk/QJEoUGId68nNSZUy",
+    "role": "user"
+  },
+  {
+    "id": 4,
+    "username": "user_1774795426870",
+    "email": "user_1774795426870@example.com",
+    "password": "$2b$10$LiGbgbWp/kX6QGfvmHMU6uMuLp3NEzxVfURKgDfe30Yse1ZHUw5xi",
+    "role": "user"
+  }
+]

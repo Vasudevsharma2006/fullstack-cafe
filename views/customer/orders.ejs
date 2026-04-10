@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="en">
+  <%- include("../partials/head", { title }) %>
+  <body>
+    <%- include("../partials/nav-main") %>
+
+    <div class="container py-5">
+      <div class="row mb-5">
+        <div class="col-md-8">
+          <h2><i class="fas fa-receipt"></i> My Orders</h2>
+          <p class="text-muted">View your order history</p>
+        </div>
+        <div class="col-md-4 text-end">
+          <a href="/menu" class="btn btn-accent new-order-btn">
+            <i class="fas fa-utensils me-1"></i> New Order
+          </a>
+        </div>
+      </div>
+      <% if (success) { %>
+      <div class="alert alert-success"><%= success %></div>
+      <% } %>
+      <% if (error) { %>
+      <div class="alert alert-danger"><%= error %></div>
+      <% } %>
+
+      <% if (orders.length === 0) { %>
+      <div class="row">
+        <div class="col-md-8 mx-auto">
+          <div class="alert alert-info text-center py-5">
+            <i class="fas fa-inbox fa-3x mb-3"></i>
+            <h4>No Orders Yet</h4>
+            <p>
+              You haven't placed any orders yet. Start by browsing our menu!
+            </p>
+            <a href="/menu" class="btn btn-accent">
+              <i class="fas fa-list me-1"></i> View Menu
+            </a>
+          </div>
+        </div>
+      </div>
+      <% } else { %>
+      <div class="row">
+        <div class="col-md-12">
+          <div class="table-responsive">
+            <table class="table table-hover table-striped">
+              <thead class="table-dark">
+                <tr>
+                  <th>Order ID</th>
+                  <th>Item</th>
+                  <th>Quantity</th>
+                  <th>Unit Price</th>
+                  <th>Total</th>
+                  <th>Date & Time</th>
+                  <th>Status</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                <% orders.forEach(order => { %>
+                <tr data-order-id="<%= order.id %>">
+                  <td><strong>#<%= order.id %></strong></td>
+                  <td><%= order.item %></td>
+                  <td class="quantity-cell">
+                    <% if (order.status !== 'Delivered' && order.status !== 'Cancelled') { %>
+                    <div class="quantity-controls d-flex align-items-center">
+                      <button
+                        class="btn btn-sm btn-outline-secondary qty-minus"
+                        data-order-id="<%= order.id %>"
+                        data-current-qty="<%= order.quantity %>"
+                      >
+                        <i class="fas fa-minus"></i>
+                      </button>
+                      <span class="badge bg-secondary mx-2 qty-display"><%= order.quantity %></span>
+                      <button
+                        class="btn btn-sm btn-outline-secondary qty-plus"
+                        data-order-id="<%= order.id %>"
+                        data-current-qty="<%= order.quantity %>"
+                        data-price="<%= order.price %>"
+                      >
+                        <i class="fas fa-plus"></i>
+                      </button>
+                    </div>
+                    <% } else { %>
+                    <span class="badge bg-secondary"><%= order.quantity %></span>
+                    <% } %>
+                  </td>
+                  <td class="unit-price-cell">
+                    &#8377; <%= order.price.toFixed(2) %>
+                  </td>
+                  <td>
+                    <h6 class="mb-0 text-success total-cell">
+                      &#8377; <%= order.total.toFixed(2) %>
+                    </h6>
+                  </td>
+                  <td>
+                    <small><%= order.date %> <%= order.time %></small>
+                  </td>
+                  <td>
+                    <span
+                      class="badge status-badge <%= order.status === 'Pending' ? 'bg-warning text-dark' : order.status === 'Confirmed' ? 'bg-info' : order.status === 'Preparing' ? 'bg-primary' : order.status === 'Ready' ? 'bg-secondary' : order.status === 'Delivered' ? 'bg-success' : 'bg-dark' %>"
+                    ><%= order.status %></span>
+                  </td>
+                  <td class="action-cell">
+                    <% if (order.status !== 'Delivered' && order.status !== 'Cancelled') { %>
+                    <button
+                      class="btn btn-sm btn-outline-danger remove-order-btn"
+                      data-order-id="<%= order.id %>"
+                      title="Remove Order"
+                    >
+                      <i class="fas fa-trash"></i> Remove
+                    </button>
+                    <% } else { %>
+                    <span class="text-muted small">-</span>
+                    <% } %>
+                  </td>
+                </tr>
+                <% }); %>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="row mt-4">
+            <div class="col-md-6 offset-md-6">
+              <div class="card">
+                <div class="card-body">
+                  <h5 class="card-title">Order Summary</h5>
+                  <hr />
+                  <p class="d-flex justify-content-between">
+                    <span>Total Orders:</span>
+                    <strong id="summary-total-orders"><%= orders.length %></strong>
+                  </p>
+                  <p class="d-flex justify-content-between">
+                    <span>Total Items:</span>
+                    <strong id="summary-total-items">
+                      <%= orders.filter((o) => o.status !== "Cancelled")
+                        .reduce((sum, o) => sum + o.quantity, 0) %>
+                    </strong>
+                  </p>
+                  <hr />
+                  <h5 class="d-flex justify-content-between text-success">
+                    <span>Total Amount:</span>
+                    <strong id="summary-total-amount">
+                      &#8377; <%= orders.filter((o) => o.status !== "Cancelled")
+                        .reduce((sum, o) => sum + o.total, 0).toFixed(2) %>
+                    </strong>
+                  </h5>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <% } %>
+    </div>
+
+    <%- include("../partials/scripts", { includeMainJs: false }) %>
+    <script>
+      const ordersTableBody = document.querySelector("tbody");
+
+      function statusBadgeClass(status) {
+        if (status === "Pending") return "bg-warning text-dark";
+        if (status === "Confirmed") return "bg-info";
+        if (status === "Preparing") return "bg-primary";
+        if (status === "Ready") return "bg-secondary";
+        if (status === "Delivered") return "bg-success";
+        return "bg-dark";
+      }
+
+      function isLockedStatus(status) {
+        return status === "Delivered" || status === "Cancelled";
+      }
+
+      function quantityControlsHtml(order) {
+        return `
+          <div class="quantity-controls d-flex align-items-center">
+            <button class="btn btn-sm btn-outline-secondary qty-minus" data-order-id="${order.id}" data-current-qty="${order.quantity}">
+              <i class="fas fa-minus"></i>
+            </button>
+            <span class="badge bg-secondary mx-2 qty-display">${order.quantity}</span>
+            <button class="btn btn-sm btn-outline-secondary qty-plus" data-order-id="${order.id}" data-current-qty="${order.quantity}" data-price="${order.price}">
+              <i class="fas fa-plus"></i>
+            </button>
+          </div>
+        `;
+      }
+
+      function actionHtml(order) {
+        if (isLockedStatus(order.status)) {
+          return '<span class="text-muted small">-</span>';
+        }
+        return `
+          <button class="btn btn-sm btn-outline-danger remove-order-btn" data-order-id="${order.id}" title="Remove Order">
+            <i class="fas fa-trash"></i> Remove
+          </button>
+        `;
+      }
+
+      function updateSummary(orders) {
+        const totalOrders = orders.length;
+        const activeOrders = orders.filter((o) => o.status !== "Cancelled");
+        const totalItems = activeOrders.reduce((sum, o) => sum + o.quantity, 0);
+        const totalAmount = activeOrders.reduce((sum, o) => sum + o.total, 0);
+
+        const totalOrdersEl = document.getElementById("summary-total-orders");
+        const totalItemsEl = document.getElementById("summary-total-items");
+        const totalAmountEl = document.getElementById("summary-total-amount");
+
+        if (totalOrdersEl) totalOrdersEl.textContent = totalOrders;
+        if (totalItemsEl) totalItemsEl.textContent = totalItems;
+        if (totalAmountEl)
+          totalAmountEl.textContent = `\u20B9 ${totalAmount.toFixed(2)}`;
+      }
+
+      function syncOrderRow(order) {
+        const row = document.querySelector(`tr[data-order-id="${order.id}"]`);
+        if (!row) return;
+
+        const quantityCell = row.querySelector(".quantity-cell");
+        const unitPriceCell = row.querySelector(".unit-price-cell");
+        const totalCell = row.querySelector(".total-cell");
+        const statusBadge = row.querySelector(".status-badge");
+        const actionCell = row.querySelector(".action-cell");
+
+        if (quantityCell) {
+          quantityCell.innerHTML = isLockedStatus(order.status)
+            ? `<span class="badge bg-secondary qty-static">${order.quantity}</span>`
+            : quantityControlsHtml(order);
+        }
+
+        if (unitPriceCell)
+          unitPriceCell.textContent = `\u20B9 ${Number(order.price).toFixed(2)}`;
+        if (totalCell)
+          totalCell.textContent = `\u20B9 ${Number(order.total).toFixed(2)}`;
+
+        if (statusBadge) {
+          statusBadge.textContent = order.status;
+          statusBadge.className = `badge status-badge ${statusBadgeClass(order.status)}`;
+        }
+
+        if (actionCell) {
+          actionCell.innerHTML = actionHtml(order);
+        }
+      }
+
+      async function fetchLiveOrders() {
+        const response = await fetch(`/orders/live?_=${Date.now()}`, {
+          cache: "no-store",
+        });
+        if (!response.ok) return [];
+        const data = await response.json();
+        if (!data.success) return [];
+        return data.orders || [];
+      }
+
+      async function syncOrdersWithoutReload() {
+        if (!ordersTableBody) return;
+        try {
+          const liveOrders = await fetchLiveOrders();
+          liveOrders.forEach(syncOrderRow);
+          updateSummary(liveOrders);
+        } catch (error) {
+          // Silent fail for background sync
+        }
+      }
+
+      async function postForm(url, body) {
+        const response = await fetch(url, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/x-www-form-urlencoded",
+          },
+          body,
+        });
+        return response.json();
+      }
+
+      document.addEventListener("click", async (event) => {
+        const minusButton = event.target.closest(".qty-minus");
+        const plusButton = event.target.closest(".qty-plus");
+        const removeButton = event.target.closest(".remove-order-btn");
+
+        if (removeButton) {
+          const orderId = removeButton.dataset.orderId;
+          if (!confirm("Are you sure you want to remove this order?")) return;
+          const reason = prompt("Please enter cancellation reason:");
+          if (reason === null) return;
+          const trimmedReason = reason.trim();
+          if (!trimmedReason) {
+            alert("Cancellation reason is required.");
+            return;
+          }
+          try {
+            const data = await postForm(
+              "/orders/cancel",
+              `orderId=${orderId}&reason=${encodeURIComponent(trimmedReason)}`,
+            );
+            if (!data.success) {
+              alert(data.message);
+              return;
+            }
+            await syncOrdersWithoutReload();
+          } catch (error) {
+            alert("Error removing order. Please try again.");
+          }
+          return;
+        }
+
+        if (minusButton || plusButton) {
+          const button = minusButton || plusButton;
+          const orderId = button.dataset.orderId;
+          let currentQty = parseInt(button.dataset.currentQty, 10);
+          currentQty = Number.isNaN(currentQty) ? 1 : currentQty;
+          const nextQty = minusButton ? currentQty - 1 : currentQty + 1;
+
+          if (nextQty < 1) {
+            alert(
+              "Minimum quantity is 1. Use Remove button to delete the order.",
+            );
+            return;
+          }
+          if (nextQty > 10) {
+            alert("Maximum quantity is 10.");
+            return;
+          }
+
+          try {
+            const data = await postForm(
+              "/orders/update-quantity",
+              `orderId=${orderId}&quantity=${nextQty}`,
+            );
+            if (!data.success) {
+              alert(data.message);
+              return;
+            }
+            await syncOrdersWithoutReload();
+          } catch (error) {
+            alert("Error updating quantity. Please try again.");
+          }
+        }
+      });
+
+      // Background live sync disabled to avoid automatic /orders/live requests.
+    </script>
+  </body>
+</html>
+
+
+
+

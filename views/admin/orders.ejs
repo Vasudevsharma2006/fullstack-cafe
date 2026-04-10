@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="en">
+    <%- include("../partials/head", { title }) %>
+  <body>
+        <%- include("../partials/nav-admin") %>
+
+    <div class="container-fluid py-4">
+      <div class="row mb-4">
+        <div class="col-md-12">
+          <div class="d-flex justify-content-between align-items-center">
+            <div>
+              <h2><i class="fas fa-receipt"></i> Manage Orders</h2>
+              <p class="text-muted mb-0">View and manage all customer orders</p>
+            </div>
+            <a href="/admin/orders/cancelled" class="btn btn-outline-danger">
+              <i class="fas fa-ban"></i> Cancelled Orders </a>
+          </div>
+        </div>
+      </div>
+
+      <div class="row mb-3">
+        <div class="col-md-12">
+          <div class="card border-warning">
+            <div
+              class="card-header bg-warning-subtle d-flex justify-content-between align-items-center"
+            >
+              <strong><i class="fas fa-bell"></i> Notifications</strong>
+              <button
+                class="btn btn-sm btn-outline-dark"
+                id="clear-notifications-btn"
+              >
+                Clear History
+              </button>
+            </div>
+            <div class="card-body py-2" id="admin-notifications">
+              <small class="text-muted">No notifications yet.</small>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="table-responsive">
+        <table class="table table-hover table-striped">
+          <thead class="table-dark">
+            <tr>
+              <th>Order ID</th>
+              <th>Item</th>
+              <th>Quantity</th>
+              <th>Unit Price</th>
+              <th>Total</th>
+              <th>Date & Time</th>
+              <th>Status</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody id="admin-orders-tbody">
+            <% if (orders.length === 0) { %>
+            <tr>
+              <td colspan="8" class="text-center text-muted py-4">
+                <i class="fas fa-inbox fa-2x mb-2"></i><br />
+                No orders yet
+              </td>
+            </tr>
+            <% } else { %> <% orders.forEach(order => { %>
+            <tr>
+              <td><strong>#<%= order.id %></strong></td>
+              <td><%= order.item %></td>
+              <td>
+                <% if (order.status !== 'Delivered' && order.status !==
+                'Cancelled') { %>
+                <div class="quantity-controls d-flex align-items-center">
+                  <button
+                    class="btn btn-sm btn-outline-secondary qty-minus"
+                    data-order-id="<%= order.id %>"
+                    data-current-qty="<%= order.quantity %>"
+                  >
+                    <i class="fas fa-minus"></i>
+                  </button>
+                  <span class="badge bg-secondary mx-2 qty-display"
+                    ><%= order.quantity %></span
+                  >
+                  <button
+                    class="btn btn-sm btn-outline-secondary qty-plus"
+                    data-order-id="<%= order.id %>"
+                    data-current-qty="<%= order.quantity %>"
+                    data-price="<%= order.price %>"
+                  >
+                    <i class="fas fa-plus"></i>
+                  </button>
+                </div>
+                <% } else { %>
+                <span class="badge bg-secondary"><%= order.quantity %></span>
+                <% } %>
+              </td>
+              <td>&#8377; <%= order.price.toFixed(2) %></td>
+              <td>
+                <h6 class="mb-0 text-success">
+                  &#8377; <%= order.total.toFixed(2) %>
+                </h6>
+              </td>
+              <td><small><%= order.date %> <%= order.time %></small></td>
+              <td>
+                <span class="badge bg-warning text-dark"
+                  ><%= order.status %></span
+                >
+              </td>
+              <td>
+                <div class="d-flex gap-2">
+                  <select
+                    class="form-select form-select-sm"
+                    id="status-select-<%= order.id %>"
+                    data-current-status="<%= order.status %>"
+                  >
+                    <option value="Pending">Pending</option>
+                    <option value="Confirmed">Confirmed</option>
+                    <option value="Preparing">Preparing</option>
+                    <option value="Ready">Ready</option>
+                    <option value="Delivered">Delivered</option>
+                    <option value="Cancelled">Cancelled</option>
+                  </select>
+                  <button
+                    class="btn btn-sm btn-primary update-status-btn"
+                    data-order-id="<%= order.id %>"
+                  >
+                    Update
+                  </button>
+                </div>
+              </td>
+            </tr>
+            <% }); %> <% } %>
+          </tbody>
+        </table>
+      </div>
+
+      <% if (orders.length > 0) { %>
+      <div class="row mt-4">
+        <div class="col-md-6 offset-md-6">
+          <div class="card">
+            <div class="card-header bg-dark text-white">
+              <h5 class="mb-0">Summary Statistics</h5>
+            </div>
+            <div class="card-body">
+              <p class="d-flex justify-content-between">
+                <span>Total Orders:</span>
+                <strong id="summary-total-orders"><%= orders.length %></strong>
+              </p>
+              <p class="d-flex justify-content-between">
+                <span>Total Items Ordered:</span>
+                <strong id="summary-total-items"
+                  ><%= activeOrders.reduce((sum, o) => sum + o.quantity, 0)
+                  %></strong
+                >
+              </p>
+              <hr />
+              <h5 class="d-flex justify-content-between text-success">
+                <span>Total Revenue:</span>
+                <strong id="summary-total-revenue"
+                  >&#8377; <%= activeOrders.reduce((sum, o) => sum + o.total,
+                  0).toFixed(2) %></strong
+                >
+              </h5>
+            </div>
+          </div>
+        </div>
+      </div>
+      <% } %>
+    </div>
+
+    <footer class="bg-dark text-light py-4 mt-5">
+      <div class="container">
+        <p class="text-center mb-0">
+          &copy; 2026 CAFE Admin Panel - All Rights Reserved
+        </p>
+      </div>
+    </footer>
+
+        <%- include("../partials/scripts", { includeMainJs: false }) %>
+    <script>
+      const tbody = document.getElementById("admin-orders-tbody");
+      let latestNotificationsVersion = -1;
+
+      function escapeHtml(value) {
+        return String(value)
+          .replaceAll("&", "&amp;")
+          .replaceAll("<", "&lt;")
+          .replaceAll(">", "&gt;")
+          .replaceAll('"', "&quot;")
+          .replaceAll("'", "&#39;");
+      }
+
+      function statusBadgeClass(status) {
+        if (status === "Pending") return "bg-warning text-dark";
+        if (status === "Confirmed") return "bg-info";
+        if (status === "Preparing") return "bg-primary";
+        if (status === "Ready") return "bg-secondary";
+        if (status === "Delivered") return "bg-success";
+        return "bg-dark";
+      }
+
+      function isLockedStatus(status) {
+        return status === "Delivered" || status === "Cancelled";
+      }
+
+      function quantityCellHtml(order) {
+        if (isLockedStatus(order.status)) {
+          return `<span class="badge bg-secondary">${order.quantity}</span>`;
+        }
+        return `
+          <div class="quantity-controls d-flex align-items-center">
+            <button class="btn btn-sm btn-outline-secondary qty-minus" data-order-id="${order.id}" data-current-qty="${order.quantity}">
+              <i class="fas fa-minus"></i>
+            </button>
+            <span class="badge bg-secondary mx-2 qty-display">${order.quantity}</span>
+            <button class="btn btn-sm btn-outline-secondary qty-plus" data-order-id="${order.id}" data-current-qty="${order.quantity}" data-price="${order.price}">
+              <i class="fas fa-plus"></i>
+            </button>
+          </div>
+        `;
+      }
+
+      function actionCellHtml(order, selectedStatus) {
+        const currentStatus = selectedStatus || order.status;
+        return `
+          <div class="d-flex gap-2">
+            <select class="form-select form-select-sm" id="status-select-${order.id}">
+              <option value="Pending" ${currentStatus === "Pending" ? "selected" : ""}>Pending</option>
+              <option value="Confirmed" ${currentStatus === "Confirmed" ? "selected" : ""}>Confirmed</option>
+              <option value="Preparing" ${currentStatus === "Preparing" ? "selected" : ""}>Preparing</option>
+              <option value="Ready" ${currentStatus === "Ready" ? "selected" : ""}>Ready</option>
+              <option value="Delivered" ${currentStatus === "Delivered" ? "selected" : ""}>Delivered</option>
+              <option value="Cancelled" ${currentStatus === "Cancelled" ? "selected" : ""}>Cancelled</option>
+            </select>
+            <button class="btn btn-sm btn-primary update-status-btn" data-order-id="${order.id}">
+              Update
+            </button>
+          </div>
+        `;
+      }
+
+      function getStatusDrafts() {
+        const drafts = {};
+        document
+          .querySelectorAll('select[id^="status-select-"]')
+          .forEach((s) => {
+            const id = s.id.replace("status-select-", "");
+            drafts[id] = s.value;
+          });
+        return drafts;
+      }
+
+      function renderRows(orders, statusDrafts = {}) {
+        if (!orders.length) {
+          tbody.innerHTML = `
+            <tr>
+              <td colspan="8" class="text-center text-muted py-4">
+                <i class="fas fa-inbox fa-2x mb-2"></i><br />
+                No orders yet
+              </td>
+            </tr>
+          `;
+          return;
+        }
+
+        tbody.innerHTML = orders .map(
+            (order) => `
+            <tr data-order-id="${order.id}">
+              <td><strong>#${order.id}</strong></td>
+              <td>${escapeHtml(order.item)}</td>
+              <td>${quantityCellHtml(order)}</td>
+              <td>&#8377; ${Number(order.price).toFixed(2)}</td>
+              <td><h6 class="mb-0 text-success">&#8377; ${Number(order.total).toFixed(2)}</h6></td>
+              <td><small>${escapeHtml(order.date)} ${escapeHtml(order.time)}</small></td>
+              <td><span class="badge ${statusBadgeClass(order.status)}">${escapeHtml(order.status)}</span></td>
+              <td>${actionCellHtml(order, statusDrafts[order.id])}</td>
+            </tr>
+          `,
+          )
+          .join("");
+      }
+
+      function updateSummary(summary) {
+        const totalOrdersEl = document.getElementById("summary-total-orders");
+        const totalItemsEl = document.getElementById("summary-total-items");
+        const totalRevenueEl = document.getElementById("summary-total-revenue");
+        if (totalOrdersEl) totalOrdersEl.textContent = summary.totalOrders ?? 0;
+        if (totalItemsEl) totalItemsEl.textContent = summary.totalItems ?? 0;
+        if (totalRevenueEl) {
+          totalRevenueEl.textContent = `\u20B9 ${Number(summary.totalRevenue || 0).toFixed(2)}`;
+        }
+      }
+
+      function updateNotifications(notifications) {
+        const notificationsEl = document.getElementById("admin-notifications");
+        if (!notificationsEl) return;
+
+        if (!notifications || notifications.length === 0) {
+          notificationsEl.innerHTML = "";
+          return;
+        }
+
+        notificationsEl.innerHTML = notifications
+          .map(
+            (n) => `
+            <div class="alert alert-warning py-2 px-3 mb-2">
+              <div class="small"><strong>${escapeHtml(n.time || "")}</strong></div>
+              <div>${escapeHtml(n.message || "")}</div>
+            </div>
+          `,
+          )
+          .join("");
+      }
+
+      async function fetchLiveAdminOrders() {
+        const response = await fetch(`/admin/orders/live?_=${Date.now()}`, {
+          cache: "no-store",
+        });
+        if (!response.ok) return null;
+        const data = await response.json();
+        return data.success ? data : null;
+      }
+
+      async function syncAdminOrdersWithoutReload() {
+        try {
+          if (document.activeElement?.id?.startsWith("status-select-")) return;
+          const data = await fetchLiveAdminOrders();
+          if (!data) return;
+          if (
+            typeof data.notificationsVersion === "number" &&
+            data.notificationsVersion < latestNotificationsVersion
+          ) {
+            return;
+          }
+          if (typeof data.notificationsVersion === "number") {
+            latestNotificationsVersion = data.notificationsVersion;
+          }
+          const drafts = getStatusDrafts();
+          renderRows(data.orders || [], drafts);
+          updateSummary(data.summary || {});
+          updateNotifications(data.notifications || []);
+        } catch (error) {
+          // silent background failure
+        }
+      }
+
+      async function postForm(url, body) {
+        const response = await fetch(url, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/x-www-form-urlencoded",
+          },
+          body,
+        });
+        return response.json();
+      }
+
+      const clearNotificationsBtn = document.getElementById(
+        "clear-notifications-btn",
+      );
+      if (clearNotificationsBtn) {
+        clearNotificationsBtn.addEventListener("click", async () => {
+          if (!confirm("Clear all notification history?")) return;
+          try {
+            const data = await postForm("/admin/notifications/clear", "");
+            if (!data.success) {
+              alert(data.message || "Unable to clear notifications.");
+              return;
+            }
+            updateNotifications([]);
+            await syncAdminOrdersWithoutReload();
+          } catch (error) {
+            alert("Error clearing notifications. Please try again.");
+          }
+        });
+      }
+
+      document.addEventListener("click", async (event) => {
+        const minusButton = event.target.closest(".qty-minus");
+        const plusButton = event.target.closest(".qty-plus");
+        const updateStatusButton = event.target.closest(".update-status-btn");
+
+        if (minusButton || plusButton) {
+          const button = minusButton || plusButton;
+          const orderId = button.dataset.orderId;
+          let currentQty = parseInt(button.dataset.currentQty, 10);
+          currentQty = Number.isNaN(currentQty) ? 1 : currentQty;
+          const nextQty = minusButton ? currentQty - 1 : currentQty + 1;
+
+          if (nextQty < 1) {
+            alert("Minimum quantity is 1.");
+            return;
+          }
+          if (nextQty > 10) {
+            alert("Maximum quantity is 10.");
+            return;
+          }
+
+          try {
+            const data = await postForm(
+              "/orders/update-quantity",
+              `orderId=${orderId}&quantity=${nextQty}`,
+            );
+            if (!data.success) {
+              alert(data.message);
+              return;
+            }
+            await syncAdminOrdersWithoutReload();
+          } catch (error) {
+            alert("Error updating quantity. Please try again.");
+          }
+          return;
+        }
+
+        if (updateStatusButton) {
+          const orderId = updateStatusButton.dataset.orderId;
+          const statusSelect = document.getElementById(
+            `status-select-${orderId}`,
+          );
+          if (!statusSelect) return;
+          const status = statusSelect.value;
+
+          try {
+            const data = await postForm(
+              "/orders/update-status",
+              `orderId=${orderId}&status=${encodeURIComponent(status)}`,
+            );
+            if (!data.success) {
+              alert(data.message);
+              return;
+            }
+            await syncAdminOrdersWithoutReload();
+          } catch (error) {
+            alert("Error updating order status. Please try again.");
+          }
+        }
+      });
+
+      syncAdminOrdersWithoutReload();
+      setInterval(syncAdminOrdersWithoutReload, 3000);
+    </script>
+  </body>
+</html>
+
+
+

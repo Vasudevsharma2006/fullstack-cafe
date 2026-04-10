@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+  <%- include("../partials/head", { title }) %>
+  <body>
+    <%- include("../partials/nav-main") %>
+
+    <div class="container py-5">
+      <div class="row mb-4">
+        <div class="col-md-8">
+          <h2><i class="fas fa-utensils"></i> Our Menu</h2>
+          <p class="text-muted">
+            Browse and order from our delicious selection
+          </p>
+        </div>
+        <div class="col-md-4 text-end">
+          <div class="btn-group" role="group">
+            <a href="/menu" class="btn btn-sm btn-outline-primary active"
+              >All Items</a
+            >
+          </div>
+        </div>
+      </div>
+
+      <% if (!user) { %>
+      <div class="alert alert-info alert-dismissible fade show" role="alert">
+        <i class="fas fa-info-circle"></i> <strong>Please login</strong> to
+        place orders.
+        <a href="/login" class="alert-link">Login here</a>
+      </div>
+
+      <% } else if (user.role !== 'admin') { %>
+      <div class="alert alert-info">
+        <strong>Need admin access?</strong> Please contact the system owner.
+      </div>
+      <% } %>
+
+      <div class="row">
+        <% menuItems.forEach(item => { %>
+        <div class="col-md-6 col-lg-4 mb-4">
+          <div class="food-card">
+            <!-- Food Image -->
+            <div class="food-card-image">
+              <img
+                src="<%= item.image || 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=400&h=400&fit=crop' %>"
+                alt="<%= item.name %>"
+                loading="lazy"
+                onerror="
+                  this.src = 'https://via.placeholder.com/400?text=No+Image'
+                "
+              />
+              <div
+                class="food-card-badge <%= item.available ? 'available' : 'unavailable' %>"
+              >
+                <%= item.available ? 'Available' : 'Out of Stock' %>
+              </div>
+            </div>
+
+            <!-- Card Body -->
+            <div class="food-card-body">
+              <h5 class="food-card-title"><%= item.name %></h5>
+              <span class="food-card-category"><%= item.category %></span>
+              <p class="food-card-description"><%= item.description %></p>
+
+              <!-- Footer with Price and Action -->
+              <div class="food-card-footer">
+                <div class="food-card-price">
+                  &#8377; <%= item.price.toFixed(2) %>
+                </div>
+              </div>
+
+              <!-- Order Action -->
+              <% if (item.available) { %> <% if (user) { %>
+              <form action="/orders/add" method="POST" class="mt-2">
+                <div class="input-group input-group-sm mb-2">
+                  <button
+                    class="btn btn-outline-secondary"
+                    type="button"
+                    id="minus-<%= item.id %>"
+                  >
+                    <i class="fas fa-minus"></i>
+                  </button>
+                  <input
+                    type="number"
+                    id="quantity-<%= item.id %>"
+                    name="quantity"
+                    min="1"
+                    max="10"
+                    value="1"
+                    class="form-control text-center"
+                  />
+                  <button
+                    class="btn btn-outline-secondary"
+                    type="button"
+                    id="plus-<%= item.id %>"
+                  >
+                    <i class="fas fa-plus"></i>
+                  </button>
+                </div>
+                <input type="hidden" name="itemId" value="<%= item.id %>" />
+                <button
+                  type="submit"
+                  class="btn btn-accent w-100"
+                >
+                  <i class="fas fa-shopping-cart"></i> Order Now
+                </button>
+              </form>
+              <% } else { %>
+              <a
+                href="/login"
+                class="btn btn-accent w-100 mt-2"
+              >
+                <i class="fas fa-lock"></i> Login to Order
+              </a>
+              <% } %> <% } else { %>
+              <button class="btn btn-secondary w-100 mt-2" disabled>
+                <i class="fas fa-times-circle"></i> Out of Stock
+              </button>
+              <% } %>
+            </div>
+          </div>
+        </div>
+        <% }); %>
+      </div>
+    </div>
+
+    <footer class="bg-dark text-light py-4 mt-5">
+      <div class="container">
+        <div class="row">
+          <div class="col-md-4 mb-3">
+            <h5>CAFE</h5>
+            <p>Quality cafe management system for modern businesses.</p>
+          </div>
+          <div class="col-md-4 mb-3">
+            <h5>Quick Links</h5>
+            <ul class="list-unstyled">
+              <li>
+                <a href="/" class="text-light text-decoration-none">Home</a>
+              </li>
+              <li>
+                <a href="/menu" class="text-light text-decoration-none">Menu</a>
+              </li>
+              <li>
+                <a href="/contact" class="text-light text-decoration-none"
+                  >Contact</a
+                >
+              </li>
+            </ul>
+          </div>
+          <div class="col-md-4 mb-3">
+            <h5>Contact Info</h5>
+            <p>Email: info@cafe.com<br />Phone: (123) 456-7890</p>
+          </div>
+        </div>
+        <hr />
+        <p class="text-center mb-0">&copy; 2026 CAFE - All Rights Reserved</p>
+      </div>
+    </footer>
+
+    <%- include("../partials/scripts", { includeMainJs: false }) %>
+    <script>
+      // Quantity incrementer/decrementer
+      document.querySelectorAll('[id^="plus-"]').forEach((btn) => {
+        btn.addEventListener("click", function () {
+          const id = this.id.replace("plus-", "");
+          const quantityInput = document.getElementById("quantity-" + id);
+          if (parseInt(quantityInput.value) < 10) {
+            quantityInput.value = parseInt(quantityInput.value) + 1;
+          }
+        });
+      });
+
+      document.querySelectorAll('[id^="minus-"]').forEach((btn) => {
+        btn.addEventListener("click", function () {
+          const id = this.id.replace("minus-", "");
+          const quantityInput = document.getElementById("quantity-" + id);
+          if (parseInt(quantityInput.value) > 1) {
+            quantityInput.value = parseInt(quantityInput.value) - 1;
+          }
+        });
+      });
+    </script>
+  </body>
+</html>
+
+
+

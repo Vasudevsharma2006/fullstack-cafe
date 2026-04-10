@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+    <%- include("../partials/head", { title }) %>
+  <body>
+        <%- include("../partials/nav-admin") %>
+
+    <main class="container-fluid py-4">
+      <div class="mb-4">
+        <h2 class="mb-1">
+          <i class="fas fa-chart-line me-2"></i>Admin Dashboard
+        </h2>
+        <p class="text-muted mb-0">Manage your cafe operations.</p>
+      </div>
+
+      <div class="row g-3 mb-4">
+        <div class="col-md-3">
+          <div class="card h-100">
+            <div class="card-body">
+              <p class="text-muted mb-2">Total Orders</p>
+              <h3 class="mb-0"><%= totalOrders %></h3>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-3">
+          <div class="card h-100">
+            <div class="card-body">
+              <p class="text-muted mb-2">Total Revenue</p>
+              <h3 class="mb-0">&#8377; <%= totalRevenue.toFixed(2) %></h3>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-3">
+          <div class="card h-100">
+            <div class="card-body">
+              <p class="text-muted mb-2">Menu Items</p>
+              <h3 class="mb-0"><%= menuItemsCount %></h3>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-3">
+          <div class="card h-100">
+            <div class="card-body">
+              <p class="text-muted mb-2">Staff Members</p>
+              <h3 class="mb-0"><%= staffCount %></h3>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="row g-3">
+        <div class="col-md-6">
+          <div class="card h-100">
+            <div class="card-header text-white">
+              <h5 class="mb-0">Quick Stats</h5>
+            </div>
+            <div class="card-body">
+              <p class="d-flex justify-content-between mb-2">
+                <span>Today's Orders:</span>
+                <strong><%= todayOrders %></strong>
+              </p>
+              <p class="d-flex justify-content-between mb-2">
+                <span>Average Order Value:</span>
+                <strong
+                  >&#8377; <%= (activeOrdersCount > 0 ? (totalRevenue /
+                  activeOrdersCount).toFixed(2) : '0.00') %></strong
+                >
+              </p>
+              <p class="d-flex justify-content-between mb-0">
+                <span>System Status:</span>
+                <strong><span class="badge bg-success">Online</span></strong>
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-md-6">
+          <div class="card h-100">
+            <div class="card-header text-white">
+              <h5 class="mb-0">Quick Actions</h5>
+            </div>
+            <div class="card-body">
+              <a href="/admin/menu" class="btn btn-outline-primary btn-sm w-100 mb-2">
+                <i class="fas fa-plus me-1"></i>Add Menu Item
+              </a>
+              <a href="/admin/staff" class="btn btn-outline-info btn-sm w-100 mb-2">
+                <i class="fas fa-user-plus me-1"></i>Add Staff Member
+              </a>
+              <a href="/admin/reports" class="btn btn-outline-success btn-sm w-100">
+                <i class="fas fa-file-alt me-1"></i>View Reports
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+
+        <%- include("../partials/scripts", { includeMainJs: true }) %>
+  </body>
+</html>
+
+
+

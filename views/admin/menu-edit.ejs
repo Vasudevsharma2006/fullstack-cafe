@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+  <%- include("../partials/head", { title }) %>
+<body>
+        <%- include("../partials/nav-admin") %>
+
+    <div class="container-fluid py-4">
+        <div class="row mb-4">
+            <div class="col-md-12">
+                <h2><i class="fas fa-edit"></i> Edit Menu Item</h2>
+                <p class="text-muted">Modify menu item details</p>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-8">
+                <div class="card">
+                    <div class="card-body">
+                        <form method="POST" action="/admin/menu/edit/<%= item.id %>" enctype="multipart/form-data">
+                            <div class="mb-3">
+                                <label for="name" class="form-label">Item Name</label>
+                                <input type="text" class="form-control" id="name" name="name" value="<%= item.name %>" required>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="price" class="form-label">Price</label>
+                                    <input type="number" class="form-control" id="price" name="price" step="0.01" value="<%= item.price %>" required>
+                                </div>
+
+                                <div class="col-md-6 mb-3">
+                                    <label for="category" class="form-label">Category</label>
+                                    <select class="form-control" id="category" name="category" required>
+                                        <option value="Coffee" <%= item.category === 'Coffee' ? 'selected' : '' %>>Coffee</option>
+                                        <option value="Pastry" <%= item.category === 'Pastry' ? 'selected' : '' %>>Pastry</option>
+                                        <option value="Food" <%= item.category === 'Food' ? 'selected' : '' %>>Food</option>
+                                        <option value="Cold Drinks" <%= item.category === 'Cold Drinks' ? 'selected' : '' %>>Cold Drinks</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="description" class="form-label">Description</label>
+                                <textarea class="form-control" id="description" name="description" rows="4"><%= item.description %></textarea>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="image" class="form-label">Change Image (optional)</label>
+                                <input type="file" class="form-control" id="image" name="image" accept="image/*" />
+                            </div>
+
+                            <div class="d-flex gap-2">
+                                <button type="submit" class="btn btn-success">
+                                    <i class="fas fa-save"></i> Save Changes
+                                </button>
+                                <a href="/admin/menu" class="btn btn-secondary">
+                                    <i class="fas fa-times"></i> Cancel
+                                </a>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="card">
+                    <div class="card-header bg-dark text-white">
+                        <h5 class="mb-0">Item Preview</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-3 text-center">
+                            <img
+                                src="<%= item.image || 'https://via.placeholder.com/150?text=No+Image' %>"
+                                alt="<%= item.name %>"
+                                class="img-fluid rounded"
+                                style="max-height: 150px; object-fit: cover;"
+                            />
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label text-muted">Item ID</label>
+                            <p class="mb-0"><strong>#<%= item.id %></strong></p>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label text-muted">Current Status</label>
+                            <p class="mb-0">
+                                <span class="badge bg-success">Available</span>
+                            </p>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label text-muted">Last Updated</label>
+                            <p class="mb-0"><small>Just now</small></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer class="bg-dark text-light py-4 mt-5">
+        <div class="container">
+            <p class="text-center mb-0">&copy; 2026 CAFE Admin Panel - All Rights Reserved</p>
+        </div>
+    </footer>
+
+        <%- include("../partials/scripts", { includeMainJs: false }) %>
+</body>
+</html>
+

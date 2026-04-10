@@ -1,0 +1,354 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= title %></title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.2.3/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="/">CAFE</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/menu">Menu</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/orders">Orders</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/dashboard">Dashboard</a>
+                    </li>
+                    <% if (user) { %>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/profile">Profile</a>
+                    </li>
+                    <% } %>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mt-5">
+        <h2 class="mb-4">Orders</h2>
+        
+        <% if (orders.length === 0) { %>
+            <div class="alert alert-info" role="alert">
+                No orders yet. <a href="/menu">Start ordering</a>
+            </div>
+        <% } else { %>
+            <div class="table-responsive">
+                <table class="table table-striped table-hover">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>Order ID</th>
+                            <th>Item</th>
+                            <th>Quantity</th>
+                            <th>Price</th>
+                            <th>Total</th>
+                            <th>Status</th>
+                            <th>Date</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% orders.forEach(order => { %>
+                            <tr>
+                                <td>#<%= order.id %></td>
+                                <td><%= order.item %></td>
+                                <td><%= order.quantity %></td>
+                                   <td>&#8377; <%= order.price.toFixed(2) %></td>
+                                <td><strong>&#8377; <%= order.total.toFixed(2) %></strong></td>
+                                <td>
+                                    <span class="badge <%= order.status === 'Pending' ? 'bg-warning' : order.status === 'Confirmed' ? 'bg-info' : order.status === 'Delivered' ? 'bg-success' : 'bg-secondary' %>">
+                                        <%= order.status %>
+                                    </span>
+                                </td>
+                                <td><%= order.date %></td>
+                                <td>
+                                    <div class="btn-group btn-group-sm" role="group">
+                                        <button class="btn btn-outline-secondary btn-sm" data-bs-toggle="modal" data-bs-target="#statusModal" onclick="setOrderStatus('<%= order.id %>', '<%= order.status %>')">
+                                            <i class="fas fa-edit"></i> Change
+                                        </button>
+                                        <button class="btn btn-danger btn-sm" onclick="cancelOrder('<%= order.id %>', '<%= order.status %>')" <%= order.status === 'Delivered' || order.status === 'Cancelled' ? 'disabled' : '' %>>
+                                            <i class="fas fa-times"></i> Cancel
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                        <% }); %>
+                    </tbody>
+                </table>
+            </div>
+            
+            <div class="mt-4">
+                <h4>Total Revenue: <span class="text-success">&#8377; <%= orders.reduce((sum, o) => sum + o.total, 0).toFixed(2) %></span></h4>
+                
+                <div class="mt-3 d-flex gap-2">
+                    <button class="btn btn-primary btn-lg" onclick="saveOrdersAsCSV()">
+                        <i class="fas fa-download"></i> Save Orders (CSV)
+                    </button>
+                    <button class="btn btn-success btn-lg" onclick="printOrders()">
+                        <i class="fas fa-print"></i> Print Orders </button>
+                    <button class="btn btn-info btn-lg" onclick="exportOrdersJSON()">
+                        <i class="fas fa-file-export"></i> Export JSON
+                    </button>
+                </div>
+            </div>
+        <% } %>
+    </div>
+
+    <!-- Status Change Modal -->
+    <div class="modal fade" id="statusModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header bg-dark text-white">
+                    <h5 class="modal-title"><i class="fas fa-edit"></i> Update Order Status</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="orderIdDisplay" class="form-label"><strong>Order ID:</strong></label>
+                        <input type="text" class="form-control" id="orderIdDisplay" readonly>
+                    </div>
+                    <div class="mb-3">
+                        <label for="currentStatus" class="form-label"><strong>Current Status:</strong></label>
+                        <input type="text" class="form-control" id="currentStatus" readonly>
+                    </div>
+                    <div class="mb-3">
+                        <label for="newStatus" class="form-label"><strong>Change Status To:</strong></label>
+                        <select class="form-select" id="newStatus">
+                            <option value="Pending">Pending</option>
+                            <option value="Confirmed">Confirmed</option>
+                            <option value="Preparing">Preparing</option>
+                            <option value="Ready">Ready</option>
+                            <option value="Delivered">Delivered</option>
+                            <option value="Cancelled">Cancelled</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                        <i class="fas fa-times"></i> Close
+                    </button>
+                    <button type="button" class="btn btn-success" onclick="updateOrderStatus()">
+                        <i class="fas fa-check"></i> Update Status
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.2.3/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js"></script>
+    <script>
+        let currentOrderId = null;
+
+        // Set order status for modal
+        function setOrderStatus(orderId, currentStatus) {
+            currentOrderId = orderId;
+            document.getElementById('orderIdDisplay').value = '#' + orderId;
+            document.getElementById('currentStatus').value = currentStatus;
+            document.getElementById('newStatus').value = currentStatus;
+        }
+
+        // Update order status
+        function updateOrderStatus() {
+            const newStatus = document.getElementById('newStatus').value;
+            
+            if (!currentOrderId || !newStatus) {
+                showNotification('Please select a status', 'warning');
+                return;
+            }
+
+            // Send update to server
+            fetch('/orders/update-status', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    orderId: currentOrderId,
+                    status: newStatus
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    showNotification('Order status updated successfully!', 'success');
+                    // Close modal
+                    const modal = bootstrap.Modal.getInstance(document.getElementById('statusModal'));
+                    modal.hide();
+                    // Reload page
+                    setTimeout(() => location.reload(), 1500);
+                } else {
+                    showNotification(data.message || 'Error updating status', 'danger');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                showNotification('Error updating order status', 'danger');
+            });
+        }
+
+        // Cancel order
+        function cancelOrder(orderId, currentStatus) {
+            // Check if order can be cancelled
+            if (currentStatus === 'Delivered' || currentStatus === 'Cancelled') {
+                showNotification('Cannot cancel ' + currentStatus + ' orders!', 'warning');
+                return;
+            }
+
+            // Confirm cancellation
+            if (!confirm('Are you sure you want to cancel Order #' + orderId + '?')) {
+                return;
+            }
+
+            // Send cancel request to server
+            fetch('/orders/cancel', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    orderId: orderId
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    showNotification('Order #' + orderId + ' has been cancelled!', 'success');
+                    // Reload page
+                    setTimeout(() => location.reload(), 1500);
+                } else {
+                    showNotification(data.message || 'Error cancelling order', 'danger');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                showNotification('Error cancelling order', 'danger');
+            });
+        }
+
+        // Save orders as CSV file
+        function saveOrdersAsCSV() {
+            const table = document.querySelector('table');
+            let csv = 'Order ID,Item,Quantity,Price,Total,Status,Date\n';
+            
+            const rows = table.querySelectorAll('tbody tr');
+            rows.forEach(row => {
+                const cells = row.querySelectorAll('td');
+                const csvRow = [
+                    cells[0].textContent.trim().substring(1),
+                    cells[1].textContent.trim(),
+                    cells[2].textContent.trim(),
+                    cells[3].textContent.trim(),
+                    cells[4].textContent.trim(),
+                    cells[5].textContent.trim(),
+                    cells[6].textContent.trim()
+                ].map(cell => '"' + cell + '"').join(',');
+                csv += csvRow + '\n';
+            });
+            
+            const totalRevenue = document.querySelector('.text-success').textContent;
+            csv += '\nTotal Revenue,' + totalRevenue;
+            
+            downloadFile(csv, 'orders.csv', 'text/csv');
+            showNotification('Orders saved as CSV!', 'success');
+        }
+        
+        // Print orders
+        function printOrders() {
+            const printWindow = window.open('', '', 'height=600,width=800');
+            const table = document.querySelector('table').outerHTML;
+            const totalRevenue = document.querySelector('.text-success').textContent;
+            
+            printWindow.document.write('<html><head><title>CAFE Orders</title>');
+            printWindow.document.write('<link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.2.3/css/bootstrap.min.css" rel="stylesheet">');
+            printWindow.document.write('<style>body { padding: 20px; } @media print { .no-print { display: none; }}</style>');
+            printWindow.document.write('</head><body>');
+            printWindow.document.write('<h2>CAFE - Orders Report</h2>');
+            printWindow.document.write('<p>Date: ' + new Date().toLocaleString() + '</p>');
+            printWindow.document.write(table);
+            printWindow.document.write('<p><strong>Total Revenue: ' + totalRevenue + '</strong></p>');
+            printWindow.document.write('</body></html>');
+            printWindow.document.close();
+            
+            setTimeout(() => {
+                printWindow.print();
+            }, 250);
+            
+            showNotification('Print dialog opened!', 'info');
+        }
+        
+        // Export orders as JSON
+        function exportOrdersJSON() {
+            const table = document.querySelector('table');
+            const rows = table.querySelectorAll('tbody tr');
+            const orders = [];
+            
+            rows.forEach(row => {
+                const cells = row.querySelectorAll('td');
+                orders.push({
+                    orderId: cells[0].textContent.trim().substring(1),
+                    item: cells[1].textContent.trim(),
+                    quantity: parseInt(cells[2].textContent.trim()),
+                    price: parseFloat(cells[3].textContent.replace('\u20B9', '').trim()),
+                    total: parseFloat(cells[4].textContent.replace('\u20B9', '').trim()),
+                    status: cells[5].textContent.trim(),
+                    date: cells[6].textContent.trim()
+                });
+            });
+            
+            const data = {
+                exportDate: new Date().toISOString(),
+                totalOrders: orders.length,
+                totalRevenue: document.querySelector('.text-success').textContent,
+                orders: orders };
+            
+            downloadFile(JSON.stringify(data, null, 2), 'orders.json', 'application/json');
+            showNotification('Orders exported as JSON!', 'success');
+        }
+        
+        // Helper function to download file
+        function downloadFile(content, filename, type) {
+            const blob = new Blob([content], { type: type });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = filename;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+        
+        // Show notification
+        function showNotification(message, type = 'info') {
+            const alertDiv = document.createElement('div');
+            alertDiv.className = `alert alert-${type} alert-dismissible fade show`;
+            alertDiv.role = 'alert';
+            alertDiv.innerHTML = `
+                <i class="fas fa-check-circle"></i> ${message}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            `;
+            
+            const container = document.querySelector('.container');
+            container.insertBefore(alertDiv, container.firstChild);
+            
+            setTimeout(() => {
+                alertDiv.remove();
+            }, 3000);
+        }
+    </script>
+</body>
+</html>
+
+
